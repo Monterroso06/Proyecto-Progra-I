@@ -4,16 +4,21 @@
  */
 package com.mycompany.proyectoa;
 
+import java.io.Serializable;
+
 /**
  *
  * @author angel-monterroso
  */
-public class LibroVendido {
+public class LibroVendido implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     public String titulo;
     public int cantidad;
     public double precioUnitario;
     public double subtotal;
     
+    // contructor con los parametros 
     public LibroVendido(String titulo, int cantidad, double precioUnitario, double subtotal) {
         this.titulo = titulo;
         this.cantidad = cantidad;
@@ -21,4 +26,7 @@ public class LibroVendido {
         this.subtotal = subtotal;
     }
     
+        // Constructor vacío (para cargar desde CSV)
+    public LibroVendido() {
+    }
 }

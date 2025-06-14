@@ -71,7 +71,7 @@ public class ConsultaUsuarios extends javax.swing.JFrame {
         try {
    // File archivoEntrada = archivoXML;
    // File archivoXML = new File("usuarios.xml");
-    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(archivoXML);
         doc.getDocumentElement().normalize();
@@ -88,33 +88,37 @@ public class ConsultaUsuarios extends javax.swing.JFrame {
                 // Validar y asignar nombre
             NodeList nombreList = elemento.getElementsByTagName("nombre");
             if (nombreList.getLength() > 0) {
-                u.nombre = nombreList.item(0).getTextContent();
+                u.nombre = nombreList.item(0).getTextContent().trim();
             }
 
             // Validar y asignar usuario
-            NodeList usuarioList = elemento.getElementsByTagName("usuario");
-            if (usuarioList.getLength() > 0) {
-                u.usuario = usuarioList.item(0).getTextContent();
+            NodeList usuarioListInterno = elemento.getElementsByTagName("usuario");
+            if (usuarioListInterno.getLength() > 0) {
+                u.usuario = usuarioListInterno.item(0).getTextContent().trim();
             }
 
             // Validar y asignar password
             NodeList passwordList = elemento.getElementsByTagName("password");
             if (passwordList.getLength() > 0) {
-                u.password = passwordList.item(0).getTextContent();
+                u.password = passwordList.item(0).getTextContent().trim();
             }
 
             // Validar y asignar rol
             NodeList rolList = elemento.getElementsByTagName("rol");
             if (rolList.getLength() > 0) {
-                u.rol = rolList.item(0).getTextContent();
+                u.rol = rolList.item(0).getTextContent().trim();
 
            /*     Usuario u = new Usuario();
                 u.nombre = elemento.getElementsByTagName("nombre").item(0).getTextContent();
                 u.usuario = elemento.getElementsByTagName("usuario").item(0).getTextContent();
                 u.password = elemento.getElementsByTagName("password").item(0).getTextContent();
                 u.rol = elemento.getElementsByTagName("rol").item(0).getTextContent();*/
-               } 
+            if (u.nombre != null && !u.nombre.isEmpty() && u.usuario != null && !u.usuario.isEmpty()) {
                 ProyectoA.usuarios.add(u);
+            }
+                    
+               } 
+             //   ProyectoA.usuarios.add(u);
             }
         }
 

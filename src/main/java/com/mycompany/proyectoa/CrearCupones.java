@@ -129,15 +129,16 @@ public class CrearCupones extends javax.swing.JFrame {
         //cupones.add(cupon);
         //tableModel.addRow(new Object[]{codigo, descuento, fechaVencimiento});
         
-        Cupon cupon = new Cupon(codigo, descuento, fechaVencimiento);
-        cupon.setTipoDescuento(tipo);
+        Cupon cupon = new Cupon(codigo, descuento, fechaVencimiento, tipo);
+        cupones.add(cupon);
+//cupon.setValorDescuento(descuento);
         
         cupones.add(cupon);
         // en la tabla desde el csv
         String descuentoFormateado = tipo.equals("porcentaje") ? descuento + "%" : String.valueOf(descuento);
         tableModel.addRow(new Object[]{codigo, descuentoFormateado, fechaVencimiento});
 
-        cupones.add(cupon);
+       // cupones.add(cupon);
         
          limpiarCampos();
         JOptionPane.showMessageDialog(this, "Cupón guardado exitosamente.");
@@ -309,33 +310,37 @@ public class CrearCupones extends javax.swing.JFrame {
     }
     
     private boolean procesarLinea(String linea) {
-        if (linea == null || linea.trim().isEmpty()) return false;
+    if (linea == null || linea.trim().isEmpty()) return false;
 
     String[] partes = linea.split("\\|");
     if (partes.length < 4) return false; // Deben ser 4 columnas
-    
+
     String codigo = partes[0].trim();
     String descuentoTexto = partes[1].trim();
     String tipo = partes[2].trim(); // "porcentaje" o "monto"
     String fecha = partes[3].trim();
-    
+
     double descuento;
     try {
         descuento = Double.parseDouble(descuentoTexto);
     } catch (NumberFormatException e) {
         return false;
     }
-    
-    Cupon cupon = new Cupon(codigo, descuento, fecha);
-    cupon.setTipoDescuento(tipo);
+
+    Cupon cupon = new Cupon(codigo, descuento, fecha, tipo);
+    cupones.add(cupon);
+
+   // cupon.setValorDescuento(descuento); // importante para que funcione
 
     cupones.add(cupon);
+
     // Mostrar en JTable correctamente
     String descuentoFormateado = tipo.equals("porcentaje") ? descuento + "%" : String.valueOf(descuento);
     tableModel.addRow(new Object[]{codigo, descuentoFormateado, fecha});
 
     return true;
-    }
+}
+
     
     private void guardarCuponesEnCSV() {
         JFileChooser fileChoser = new JFileChooser();
@@ -441,6 +446,11 @@ public class CrearCupones extends javax.swing.JFrame {
         });
 
         btnGuardarCSV.setText("Guardar");
+        btnGuardarCSV.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarCSVActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -561,6 +571,10 @@ if (resultado == JFileChooser.APPROVE_OPTION) {
     cargarCuponesDesdeCSV(archivoSeleccionado);
     }
     }//GEN-LAST:event_btnCargarCSVActionPerformed
+
+    private void btnGuardarCSVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarCSVActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnGuardarCSVActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Eliminar;

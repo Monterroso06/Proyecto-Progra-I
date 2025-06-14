@@ -210,6 +210,7 @@ public class libroventa extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         LibrosVendidos = new javax.swing.JTable();
         jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -298,6 +299,13 @@ public class libroventa extends javax.swing.JFrame {
             }
         });
 
+        jButton5.setText("prueba venta");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -309,7 +317,10 @@ public class libroventa extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addGap(18, 18, 18)
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addGap(28, 28, 28)
+                        .addComponent(jButton5))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addGap(131, 131, 131)
@@ -380,7 +391,9 @@ public class libroventa extends javax.swing.JFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(64, 64, 64)
-                        .addComponent(jButton1)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton1)
+                            .addComponent(jButton5))
                         .addGap(80, 80, 80)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
@@ -543,7 +556,6 @@ if (!cuponValido && !codigoIngresado.isEmpty()) {
     totalVenta += subtotal;
 }
     
-   
     NomVendedor.setText(ProyectoA.nombreVendedorActual);
     
     // Aquí puedes mostrar los datos del cliente y factura
@@ -615,8 +627,8 @@ if (!cuponValido && !codigoIngresado.isEmpty()) {
     llenarTablaLibros(); // Refrescar la tabla de stock
 
     NomVendedor.setEditable(false);
+   
     
-
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -682,6 +694,115 @@ if (!cuponValido && !codigoIngresado.isEmpty()) {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+
+        DefaultTableModel modelo = (DefaultTableModel) LibrosVendidos.getModel();
+        int totalFilas = modelo.getRowCount();
+        if (totalFilas == 0) {
+            JOptionPane.showMessageDialog(this, "Agrega al menos un libro antes de registrar la venta.");
+            return;
+        }
+
+        double totalVenta = 0.0;
+        for (int i = 0; i < totalFilas; i++) {
+            Object subtotalObj = modelo.getValueAt(i, 3);
+            double subtotal = (subtotalObj instanceof Number) ? ((Number) subtotalObj).doubleValue() : 0.0;
+            totalVenta += subtotal;
+        }
+
+// ===== APLICAR CUPÓN ANTES DE MOSTRAR VENTA =====
+        double descuento = 0.0;
+        boolean cuponAplicado = false;
+
+        String codigoIngresado = codigo.getText().trim();
+        String fechaIngresada = fechaVencimiento.getText().trim();
+
+        if (!codigoIngresado.isEmpty() && !fechaIngresada.isEmpty()) {
+            Cupon cuponValido = null;
+            for (Cupon c : ProyectoA.cupones) {
+                if (c.codigo.equalsIgnoreCase(codigoIngresado)) {
+                    cuponValido = c;
+                    break;
+                }
+            }
+            
+            if (cuponValido != null) {
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    Date fechaUsuario = sdf.parse(fechaIngresada);
+                    Date fechaCupon = sdf.parse(cuponValido.fechaVencimiento);
+
+                    if (!fechaUsuario.after(fechaCupon)) {
+                        // Cupón válido
+                        if (cuponValido.tipoDescuento.trim().equalsIgnoreCase("porcentaje")) {
+                            descuento = totalVenta * (cuponValido.valorDescuento / 100.0);
+                        } else {
+                            descuento = cuponValido.valorDescuento;
+                        }
+
+                        if (descuento > totalVenta) {
+                            descuento = totalVenta;
+                        }
+
+                        totalVenta -= descuento;
+                        cuponAplicado = true;
+
+                    } else {
+                        JOptionPane.showMessageDialog(this, "El cupón está vencido.");
+                    }
+
+                } catch (ParseException ex) {
+                    JOptionPane.showMessageDialog(this, "Fecha inválida. Usa formato dd/MM/yyyy");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Cupón no encontrado.");
+            }
+        }
+        double totalOriginal = totalVenta + descuento;
+// === MOSTRAR MENSAJE FINAL ===
+        StringBuilder mensaje = new StringBuilder();
+        mensaje.append("Venta realizada con éxito.");
+        if (cuponAplicado) {
+            mensaje.append("\nCupón aplicado: ").append(codigoIngresado);
+            mensaje.append("\nTotal sin descuento: ").append(totalOriginal);
+            mensaje.append("\nDescuento: Q").append(String.format("%.2f", descuento));
+        }
+        mensaje.append("\nTotal a pagar: Q").append(String.format("%.2f", totalVenta));
+        mensaje.append("\nNombre: ").append(NombreFa.getText());
+        mensaje.append("\nNIT: ").append(NoNIT.getText());
+        mensaje.append("\nDirección: ").append(DireccionFa.getText());
+
+        JOptionPane.showMessageDialog(this, mensaje.toString());
+
+        // Registrar la venta con el total con descuento ya aplicado
+        String nombre = NombreFa.getText();
+        String nit = NoNIT.getText();
+        String direccion = DireccionFa.getText();
+        String vendedor = ProyectoA.nombreVendedorActual;
+        String fecha = obtenerFechaActual();
+        double totalSinIva = totalVenta / 1.12;
+
+        List<LibroVendido> librosDeEstaVenta = new ArrayList<>();
+        for (int i = 0; i < totalFilas; i++) {
+            String titulo = (String) modelo.getValueAt(i, 0);
+            int cantidad = (modelo.getValueAt(i, 1) instanceof Number) ? ((Number) modelo.getValueAt(i, 1)).intValue() : 0;
+            double precioUnitario = (modelo.getValueAt(i, 2) instanceof Number) ? ((Number) modelo.getValueAt(i, 2)).doubleValue() : 0.0;
+            double subtotal = (modelo.getValueAt(i, 3) instanceof Number) ? ((Number) modelo.getValueAt(i, 3)).doubleValue() : 0.0;
+            librosDeEstaVenta.add(new LibroVendido(titulo, cantidad, precioUnitario, subtotal));
+        }
+
+        VentaRealizada venta = new VentaRealizada(nombre, nit, direccion, totalVenta, totalSinIva, vendedor, fecha, librosDeEstaVenta);
+        ProyectoA.ventasRealizadas.add(venta);
+
+        modelo.setRowCount(0);
+        jTextField1.setText("");
+        codigo.setText("");
+        fechaVencimiento.setText("");
+        llenarTablaLibros();
+        NomVendedor.setEditable(false);
+
+    }//GEN-LAST:event_jButton5ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton AgregarLibro;
     private javax.swing.JTextField DireccionFa;
@@ -696,6 +817,7 @@ if (!cuponValido && !codigoIngresado.isEmpty()) {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

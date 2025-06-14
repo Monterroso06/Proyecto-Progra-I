@@ -4,13 +4,16 @@
  */
 package com.mycompany.proyectoa;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author angel-monterroso
  */
-public class VentaRealizada {
+public class VentaRealizada implements Serializable {
+    private static final long serialVersionUID = 1L;
     
     public String nombre;
     public String nit;
@@ -22,7 +25,7 @@ public class VentaRealizada {
     public List<LibroVendido> librosVendidos; // <--- Nueva lista de libros vendidos
 
     
-    // Constructor
+    // Constructor con parametros 
     public VentaRealizada(String nombre, String nit, String direccion, double subtotal, double totalSinIva, String vendedor, String fecha, List<LibroVendido> librosVendidos) {
         this.nombre = nombre;
         this.nit = nit;
@@ -32,6 +35,11 @@ public class VentaRealizada {
         this.vendedor = vendedor;
         this.fecha = fecha;
         this.librosVendidos = librosVendidos;
+    }
+    
+    // Constructor vacío (para cargar desde CSV)
+    public VentaRealizada() {
+        this.librosVendidos = new ArrayList<>();
     }
     
 }

@@ -4,32 +4,30 @@
  */
 package com.mycompany.proyectoa;
 
+import java.io.Serializable;
+
 /**
  *
  * @author angel-monterroso
  */
-public class Libro {
+public class Libro implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     public String titulo;
     public String autor;
     public String genero;
     public double precio;
     public int cantidadEnStock;
- /*   public String Nit;
-    public String Direccion;
-    public String Telefono;
-    public String Nombre;*/
+
     
-   // public Libro(String titulo, String autor, String genero, double precio, int cantidadEnStock, String nit, String direccion, String telefono, String nombre ) {
+   
     public Libro(String titulo, String autor, String genero, double precio, int cantidadEnStock ) {
         this.titulo = titulo;
         this.autor = autor;
         this.genero = genero;
         this.precio = precio;
         this.cantidadEnStock = cantidadEnStock;
-       /* this.Nit = nit;
-        this.Direccion = direccion;
-        this.Telefono = telefono;
-        this.Nombre = nombre;*/
+       
         }
 
 

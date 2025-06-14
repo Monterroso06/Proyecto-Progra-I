@@ -4,22 +4,34 @@
  */
 package com.mycompany.proyectoa;
 
+import java.io.Serializable;
+
 /**
  *
  * @author angel-monterroso
  */
-public class Cupon {
+public class Cupon implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     public  String codigo;
     private  double descuento;
     public  String fechaVencimiento;
     double valorDescuento;
     public String tipoDescuento;
     
-    public Cupon(String codigo, double descuento, String fechaVencimiento) {
+    /*public Cupon(String codigo, double valorDescuento, String fechaVencimiento, String tipoDescuento) {
     this.codigo = codigo;
-    this.descuento = descuento;
+    this.valorDescuento = valorDescuento;
     this.fechaVencimiento = fechaVencimiento;
-    }
+    this.tipoDescuento = tipoDescuento;
+}*/
+    
+    public Cupon(String codigo, double valorDescuento, String fechaVencimiento, String tipoDescuento) {
+    this.codigo = codigo;
+    this.valorDescuento = valorDescuento;
+    this.fechaVencimiento = fechaVencimiento;
+    this.tipoDescuento = tipoDescuento;
+}
 
 
     public String getCodigo() { return codigo; }
